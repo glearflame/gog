@@ -11,6 +11,7 @@
     "dev": "npm run build -w @gog/shared && concurrently -n shared,server,web -c yellow,cyan,magenta \"npm run dev -w @gog/shared\" \"npm run dev -w @gog/server\" \"npm run dev -w @gog/web\"",
     "build": "npm run build -w @gog/shared && npm run build -w @gog/server && npm run build -w @gog/web",
     "postinstall": "npm run build",
+    "postinstall": "npm run build",
     "typecheck": "npm run typecheck -w @gog/shared && npm run typecheck -w @gog/server && npm run typecheck -w @gog/web",
     "test": "npm run test -w @gog/server",
     "start": "node apps/server/dist/index.js"
