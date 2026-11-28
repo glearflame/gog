@@ -7,23 +7,28 @@ import type { Database } from './types.js';
 
 const lookup = promisify(dnsLookup);
 
+/**
+ * Resolve o hostname da connection string para IPv4, evitando ENETUNREACH
+ * em redes sem IPv6. Retorna os componentes da URL com o IP resolvido.
+ */
+async function resolveDatabaseUrl(url: string): Promise<string> {
+  try {
+    const parsed = new URL(url);
+    const { address } = await lookup(parsed.hostname, { family: 4 });
+    if (address) {
+      parsed.hostname = address;
+      return parsed.toString();
+    }
+  } catch {
+    /* se falhar o lookup, usa a URL original */
+  }
+  return url;
+}
+
 export async function createDatabase(): Promise<Database> {
   if (!config.databaseUrl) return new MemoryDatabase();
 
-  // Força resolução IPv4 para evitar ENETUNREACH em redes sem IPv6
-  let resolvedUrl = config.databaseUrl;
-  try {
-    const parsed = new URL(config.databaseUrl);
-    const addr = await lookup(parsed.hostname, { family: 4 });
-    if (addr.address) {
-      parsed.hostname = addr.address;
-      resolvedUrl = parsed.toString();
-      console.log(`DNS resolvido: ${parsed.hostname} -> ${addr.address}`);
-    }
-  } catch (error) {
-    console.warn(`DNS lookup falhou, usando URL original: ${error}`);
-  }
-
+  const resolvedUrl = await resolveDatabaseUrl(config.databaseUrl);
   const database = new PostgresDatabase(resolvedUrl, config.production);
   try {
     await database.migrate();
