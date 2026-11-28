@@ -1,7 +1,9 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-for (const candidate of [path.resolve('.env'), path.resolve('../../.env')]) {
+const rootDir = process.cwd();
+
+for (const candidate of [path.resolve(rootDir, '.env'), path.resolve(rootDir, '.env.example')]) {
   if (existsSync(candidate)) {
     try { process.loadEnvFile(candidate); } catch { /* ambiente já configurado */ }
     break;
@@ -26,6 +28,6 @@ export const config = {
   sessionSecret,
   databaseUrl,
   allowDevAuth: !production && process.env.ALLOW_DEV_AUTH !== 'false',
-  webDist: process.env.WEB_DIST || path.resolve('../../apps/web/dist'),
+  webDist: process.env.WEB_DIST || path.resolve(rootDir, 'apps/web/dist'),
   sessionTtlMs: 30 * 24 * 60 * 60 * 1000,
 };
