@@ -1,5 +1,4 @@
 node_modules/
-dist/
 .env
 .env.*
 !.env.example
@@ -8,3 +7,6 @@ dist/
 coverage/
 .vite/
 supabase/
+!apps/server/dist/
+!apps/web/dist/
+!packages/shared/dist/
