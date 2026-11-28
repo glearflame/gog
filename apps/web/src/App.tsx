@@ -5,6 +5,7 @@ import { GameClient } from './network';
 import Login from './Login';
 import Lobby from './Lobby';
 import GameView from './game/GameView';
+import ResultScreen from './game/ResultScreen';
 
 export default function App() {
   const [user, setUser] = useState<PublicUser | null>(null);
@@ -90,16 +91,7 @@ export default function App() {
         <button className="button ghost" onClick={() => setInvite(null)}>Agora não</button>
       </div>
     </div>}
-    {result && !match && <div className="modal-backdrop"><section className="result-card">
-      <p className="eyebrow">PARTIDA ENCERRADA · {result.mode.toUpperCase()}</p>
-      <h2>{result.players.find((player) => player.userId === user.id)?.won ? 'VITÓRIA!' : 'FIM DE JOGO'}</h2>
-      <div className="result-list">{result.players.map((player) => <div key={player.userId} className={player.userId === user.id ? 'mine' : ''}>
-        <span>#{player.placement}</span><b>{player.name}{player.userId === user.id ? ' (você)' : ''}</b>
-        <span>{player.kills} elim.</span>{result.ranked && <span>{player.rpDelta >= 0 ? '+' : ''}{player.rpDelta} PR</span>}
-      </div>)}</div>
-      <p>{result.ranked ? 'Resultado ranqueado validado pelo servidor.' : 'Partida personalizada: estatísticas salvas, sem alteração de PR.'}</p>
-      <button className="button primary" onClick={() => setResult(null)}>Voltar ao lobby</button>
-    </section></div>}
+    {result && !match && <ResultScreen result={result} userId={user.id} user={user} onBack={() => setResult(null)} />}
     {toast && <div className={`toast ${toast.level}`} role="status">{toast.message}</div>}
   </>;
 }
